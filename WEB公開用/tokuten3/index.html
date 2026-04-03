@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>現役オンライン秘書のAI実務活用7選</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap');
+
+  :root {
+    --bg-cream:      #FDF7F2;
+    --bg-beige:      #F2E8DE;
+    --blush:         #D4A99A;
+    --blush-light:   #EDD5CC;
+    --blush-dark:    #B8867A;
+    --beige-mid:     #C8B09A;
+    --beige-dark:    #A08070;
+    --text-dark:     #3E2E28;
+    --text-mid:      #6B4E44;
+    --text-light:    #9E7B70;
+    --gold:          #C4A882;
+    --gold-light:    #DDD0BC;
+    --white-soft:    #FFFAF6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #2A2220;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Noto Sans JP', sans-serif;
+    padding: 20px;
+  }
+
+  /* ── Slide wrapper ── */
+  .slideshow {
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .slide {
+    display: none;
+    width: 900px;
+    min-height: 540px;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  }
+  .slide.active { display: flex; }
+
+  /* ── Navigation ── */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 24px;
+  }
+  .nav button {
+    background: none;
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    padding: 8px 28px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    transition: all .2s;
+  }
+  .nav button:hover { background: var(--blush-dark); border-color: var(--blush-dark); color: #fff; }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  .nav .counter { color: var(--gold); font-size: 13px; letter-spacing: 0.15em; min-width: 70px; text-align: center; }
+
+  /* ══════════════════════════════
+     SLIDE 1 — 表紙
+  ══════════════════════════════ */
+  .s1 {
+    background: var(--bg-cream);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .s1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212,169,154,.28) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(196,168,130,.2) 0%, transparent 60%);
+  }
+  .s1-ornament {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 22px;
+  }
+  .s1-label {
+    font-size: 11px;
+    letter-spacing: .35em;
+    color: var(--text-light);
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .s1-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 34px;
+    font-weight: 500;
+    color: var(--text-dark);
+    line-height: 1.55;
+    letter-spacing: .04em;
+    position: relative;
+  }
+  .s1-title span {
+    display: block;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--blush-dark);
+    letter-spacing: .12em;
+    margin-top: 10px;
+  }
+  .s1-sub {
+    font-size: 13px;
+    color: var(--text-light);
+    letter-spacing: .18em;
+    margin-top: 28px;
+    position: relative;
+  }
+  .s1-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(180deg, transparent, var(--gold), transparent);
+    margin: 22px auto 0;
+    position: relative;
+  }
+  .s1-name {
+    font-size: 12px;
+    letter-spacing: .22em;
+    color: var(--gold);
+    margin-top: 16px;
+    position: relative;
+  }
+
+  /* ══════════════════════════════
+     共通ツールカード レイアウト
+  ══════════════════════════════ */
+  .tool-slide {
+    background: var(--white-soft);
+    flex-direction: row;
+  }
+
+  /* 左カラー帯 */
+  .tool-aside {
+    width: 220px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .tool-aside.pink  { background: linear-gradient(160deg, #E8D0C8 0%, #D4A99A 100%); }
+  .tool-aside.beige { background: linear-gradient(160deg, #EDE0D0 0%, #C8B09A 100%); }
+  .tool-aside.rose  { background: linear-gradient(160deg, #E2CCCA 0%, #C49490 100%); }
+  .tool-aside.sand  { background: linear-gradient(160deg, #EAE2D6 0%, #C4AC8E 100%); }
+  .tool-aside.warm  { background: linear-gradient(160deg, #F0E0D4 0%, #D4A888 100%); }
+  .tool-aside.deep  { background: linear-gradient(160deg, #D4C4BC 0%, #A88478 100%); }
+  .tool-aside.gold  { background: linear-gradient(160deg, #EDE4D4 0%, #C4A882 100%); }
+
+  .tool-num {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 56px;
+    font-weight: 300;
+    color: rgba(255,255,255,.55);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .tool-badge {
+    font-size: 9px;
+    letter-spacing: .3em;
+    color: rgba(255,255,255,.75);
+    text-transform: uppercase;
+    background: rgba(255,255,255,.2);
+    border-radius: 2px;
+    padding: 3px 10px;
+    margin-bottom: 20px;
+  }
+  .tool-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+  .tool-name-aside {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: rgba(255,255,255,.95);
+    letter-spacing: .08em;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .tool-tagline {
+    font-size: 11px;
+    color: rgba(255,255,255,.7);
+    letter-spacing: .15em;
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  /* 右コンテンツ */
+  .tool-content {
+    flex: 1;
+    padding: 40px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .tool-section-label {
+    font-size: 9px;
+    letter-spacing: .38em;
+    color: var(--text-light);
+    margin-bottom: 22px;
+    text-transform: uppercase;
+  }
+  .tool-heading {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-dark);
+    letter-spacing: .05em;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .tool-heading small {
+    display: block;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--blush-dark);
+    letter-spacing: .18em;
+    margin-top: 4px;
+  }
+  .tool-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 16px 0;
+  }
+  .tool-block { margin-bottom: 14px; }
+  .tool-block-title {
+    font-size: 9px;
+    letter-spacing: .3em;
+    color: var(--blush-dark);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .tool-list {
+    list-style: none;
+    padding: 0;
+  }
+  .tool-list li {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.75;
+    padding-left: 14px;
+    position: relative;
+    letter-spacing: .03em;
+  }
+  .tool-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 5px;
+    height: 1px;
+    background: var(--gold);
+  }
+  .tool-tip {
+    background: linear-gradient(135deg, var(--bg-cream) 0%, var(--blush-light) 100%);
+    border-left: 2px solid var(--blush);
+    padding: 10px 14px;
+    border-radius: 0 3px 3px 0;
+    margin-top: 4px;
+  }
+  .tool-tip p {
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.8;
+    letter-spacing: .03em;
+  }
+  .tool-tip p strong {
+    color: var(--blush-dark);
+    font-weight: 500;
+  }
+
+  /* ══════════════════════════════
+     SLIDE 9 — 右腕スライド
+  ══════════════════════════════ */
+  .s9 {
+    background: var(--bg-beige);
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .s9::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 0% 50%, rgba(212,169,154,.25) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 40% at 100% 20%, rgba(196,168,130,.2) 0%, transparent 55%);
+  }
+  .s9-inner {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    z-index: 1;
+  }
+  .s9-left {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 30px;
+    border-right: 1px solid var(--gold-light);
+    flex-shrink: 0;
+  }
+  .s9-icon { font-size: 36px; margin-bottom: 14px; }
+  .s9-vert {
+    font-family: 'Noto Serif JP', serif;
+    writing-mode: vertical-rl;
+    font-size: 15px;
+    color: var(--blush-dark);
+    letter-spacing: .2em;
+    line-height: 1;
+  }
+  .s9-right {
+    flex: 1;
+    padding: 50px 50px 50px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .s9-label {
+    font-size: 9px;
+    letter-spacing: .4em;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .s9-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-dark);
+    letter-spacing: .05em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .s9-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 20px;
+  }
+  .s9-body {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    line-height: 2;
+    letter-spacing: .04em;
+  }
+  .s9-body p { margin-bottom: 12px; }
+  .s9-body p:last-child { margin-bottom: 0; }
+  .s9-keyword {
+    display: inline-block;
+    background: var(--blush-light);
+    color: var(--blush-dark);
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 2px;
+    letter-spacing: .1em;
+    margin: 0 2px;
+  }
+  .s9-closing {
+    margin-top: 22px;
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: .18em;
+    padding-top: 16px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  /* ── page indicator strip ── */
+  .page-strip {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .page-strip span {
+    width: 20px;
+    height: 2px;
+    background: var(--gold-light);
+    display: block;
+    border-radius: 1px;
+    transition: background .25s, width .25s;
+  }
+  .page-strip span.cur { background: var(--blush-dark); width: 32px; }
+
+</style>
+</head>
+<body>
+
+<div class="slideshow">
+
+  <!-- ════════════════════ SLIDE 1 表紙 ════════════════════ -->
+  <div class="slide s1 active">
+    <div class="s1-ornament"></div>
+    <div class="s1-label">SPECIAL BONUS</div>
+    <div class="s1-title">
+      現役オンライン秘書の<br>AI実務活用 7選
+      <span>― 私が毎日使っている時短の裏側 ―</span>
+    </div>
+    <div class="s1-sub">はじめに、これは「AIツールの教科書」ではありません。<br>実際のクライアントワークで毎日使っているツールだけを<br>使い方と一緒にまとめたものです。</div>
+    <div class="s1-line"></div>
+    <div class="s1-name">幸田にこ</div>
+    <div class="page-strip">
+      <span class="cur"></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 2 ChatGPT ════════════════════ -->
+  <div class="slide tool-slide">
+    <div class="tool-aside pink">
+      <div class="tool-num">01</div>
+      <div class="tool-badge">BASIC</div>
+      <div class="tool-icon">💬</div>
+      <div class="tool-name-aside">ChatGPT</div>
+      <div class="tool-tagline">考える・書く<br>パートナー</div>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section-label">Basic 01 — 基本5選</div>
+      <div class="tool-heading">
+        ChatGPT
+        <small>考える・書くパートナー</small>
+      </div>
+      <div class="tool-divider"></div>
+      <div class="tool-block">
+        <div class="tool-block-title">私の使い方</div>
+        <ul class="tool-list">
+          <li>クライアントへのメール文章の下書き</li>
+          <li>アイデアや方向性の壁打ち</li>
+          <li>音声で話しかけて、頭の中を整理してもらう</li>
+        </ul>
+      </div>
+      <div class="tool-tip">
+        <p><strong>まず試すなら →</strong><br>
+        クライアントへの報告メールの下書きを頼んでみて。<br>
+        「〇〇の件、進捗報告を書いて。丁寧だけど簡潔に」<br>
+        それだけで、そのまま使えるレベルの文章が出てくる。</p>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span class="cur"></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 3 Claude ════════════════════ -->
+  <div class="slide tool-slide">
+    <div class="tool-aside beige">
+      <div class="tool-num">02</div>
+      <div class="tool-badge">BASIC</div>
+      <div class="tool-icon">✨</div>
+      <div class="tool-name-aside">Claude</div>
+      <div class="tool-tagline">作る・見せる<br>パートナー</div>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section-label">Basic 02 — 基本5選</div>
+      <div class="tool-heading">
+        Claude
+        <small>作る・見せるパートナー</small>
+      </div>
+      <div class="tool-divider"></div>
+      <div class="tool-block">
+        <div class="tool-block-title">私の使い方</div>
+        <ul class="tool-list">
+          <li>LP（ランディングページ）の文章作成</li>
+          <li>講座スクリプトなど長文の一気生成</li>
+          <li>キャンバス機能で簡単なスライドやLP作成</li>
+        </ul>
+      </div>
+      <div class="tool-tip">
+        <p><strong>まず試すなら →</strong><br>
+        キャンバス機能で「〇〇のサービス紹介スライドを作って」<br>
+        テキストだけじゃなくて、見た目が整った形で<br>アウトプットが出てくるのを体験してほしい。</p>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span></span><span class="cur"></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 4 NotebookLM ════════════════════ -->
+  <div class="slide tool-slide">
+    <div class="tool-aside rose">
+      <div class="tool-num">03</div>
+      <div class="tool-badge">BASIC</div>
+      <div class="tool-icon">📓</div>
+      <div class="tool-name-aside">NotebookLM</div>
+      <div class="tool-tagline">クライアントの頭を<br>複製する</div>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section-label">Basic 03 — 基本5選</div>
+      <div class="tool-heading">
+        NotebookLM
+        <small>クライアントの頭を複製する</small>
+      </div>
+      <div class="tool-divider"></div>
+      <div class="tool-block">
+        <div class="tool-block-title">私の使い方</div>
+        <ul class="tool-list">
+          <li>講義資料・マニュアル・過去の発信を全部詰め込む</li>
+          <li>講座生対応チャットや認定講師用チャットを作成</li>
+          <li>クライアントの頭を複製して使い回せる形に</li>
+        </ul>
+      </div>
+      <div class="tool-tip">
+        <p><strong>まず試すなら →</strong><br>
+        クライアントの資料を3〜5個アップロードして<br>
+        「この人の考え方で、〇〇について説明して」と聞いてみて。<br>
+        普通の議事録要約ツールとは別次元の使い方ができる。</p>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span></span><span></span><span class="cur"></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 5 Notta ════════════════════ -->
+  <div class="slide tool-slide">
+    <div class="tool-aside sand">
+      <div class="tool-num">04</div>
+      <div class="tool-badge">BASIC</div>
+      <div class="tool-icon">🔒</div>
+      <div class="tool-name-aside">Notta</div>
+      <div class="tool-tagline">機密情報を守りながら<br>共有する</div>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section-label">Basic 04 — 基本5選</div>
+      <div class="tool-heading">
+        Notta
+        <small>機密情報を守りながら共有する</small>
+      </div>
+      <div class="tool-divider"></div>
+      <div class="tool-block">
+        <div class="tool-block-title">私の使い方</div>
+        <ul class="tool-list">
+          <li>個人情報が含まれる動画の安全な共有</li>
+          <li>ZOOMに入室して文字起こし・要約・リンク共有</li>
+        </ul>
+      </div>
+      <div class="tool-block">
+        <div class="tool-block-title">なぜNottaを選ぶか</div>
+        <ul class="tool-list">
+          <li>オンライン秘書はクライアントの個人情報を扱う場面が多い</li>
+          <li>機密情報の保持に強く、録画の配布も安心</li>
+        </ul>
+      </div>
+      <div class="tool-tip">
+        <p><strong>まず試すなら →</strong><br>
+        次のクライアントミーティングでZOOMにNottaを入室させてみて。<br>文字起こしの精度と、要約をリンクで共有できる便利さを体感してほしい。</p>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span></span><span></span><span></span><span class="cur"></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 6 NanoBanana ════════════════════ -->
+  <div class="slide tool-slide">
+    <div class="tool-aside warm">
+      <div class="tool-num">05</div>
+      <div class="tool-badge">BASIC</div>
+      <div class="tool-icon">🎨</div>
+      <div class="tool-name-aside">NanoBanana</div>
+      <div class="tool-tagline">画像を<br>自分で作る</div>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section-label">Basic 05 — 基本5選</div>
+      <div class="tool-heading">
+        NanoBanana
+        <small>画像を自分で作る</small>
+      </div>
+      <div class="tool-divider"></div>
+      <div class="tool-block">
+        <div class="tool-block-title">私の使い方</div>
+        <ul class="tool-list">
+          <li>SNS投稿用のビジュアル作成</li>
+          <li>ちょっとした画像素材が必要な時に自分で生成</li>
+        </ul>
+      </div>
+      <div class="tool-block">
+        <div class="tool-block-title">なぜ外注しないのか</div>
+        <ul class="tool-list">
+          <li>SNSの画像は「今すぐ欲しい」ことが多い</li>
+          <li>スピードが正義の場面では、自分で作れた方が強い</li>
+        </ul>
+      </div>
+      <div class="tool-tip">
+        <p><strong>まず試すなら →</strong><br>
+        次のSNS投稿で使うアイキャッチ画像を1枚作ってみて。<br>「こういう雰囲気で」って伝えるだけで、それっぽいものが出てくる。</p>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span class="cur"></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 7 Google AI Studio ════════════════════ -->
+  <div class="slide tool-slide">
+    <div class="tool-aside deep">
+      <div class="tool-num">06</div>
+      <div class="tool-badge">ADVANCED</div>
+      <div class="tool-icon">🎬</div>
+      <div class="tool-name-aside">Google<br>AI Studio</div>
+      <div class="tool-tagline">動画を文字にして<br>そのまま分析する</div>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section-label">Advanced 01 — 応用2選</div>
+      <div class="tool-heading">
+        Google AI Studio
+        <small>動画を文字にして、そのまま分析する</small>
+      </div>
+      <div class="tool-divider"></div>
+      <div class="tool-block">
+        <div class="tool-block-title">私の使い方</div>
+        <ul class="tool-list">
+          <li>リールなど短い動画の文字起こし</li>
+          <li>文字起こし → 構成分析・競合リサーチを一気に</li>
+        </ul>
+      </div>
+      <div class="tool-block">
+        <div class="tool-block-title">Nottaとの使い分け</div>
+        <ul class="tool-list">
+          <li>Notta → 個人情報がある動画を安全に共有したい時</li>
+          <li>Google AI Studio → 短い動画を分析まで一気にやりたい時</li>
+        </ul>
+      </div>
+      <div class="tool-tip">
+        <p><strong>まず試すなら →</strong><br>
+        競合のリールや自分の過去リールをアップロードして<br>「このリールの構成を分析して」と聞いてみて。</p>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span class="cur"></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 8 Claude Code ════════════════════ -->
+  <div class="slide tool-slide">
+    <div class="tool-aside gold">
+      <div class="tool-num">07</div>
+      <div class="tool-badge">ADVANCED</div>
+      <div class="tool-icon">⚙️</div>
+      <div class="tool-name-aside">Claude Code</div>
+      <div class="tool-tagline">コードで<br>仕組みを作る</div>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section-label">Advanced 02 — 応用2選</div>
+      <div class="tool-heading">
+        Claude Code
+        <small>コードで仕組みを作る</small>
+      </div>
+      <div class="tool-divider"></div>
+      <div class="tool-block">
+        <div class="tool-block-title">私の使い方</div>
+        <ul class="tool-list">
+          <li>クライアントごとに発信・ペルソナ・事業内容を記憶させたシステムを構築</li>
+          <li>LP・講座設計・セミナー内容の検討・メルマガ生成まで行う</li>
+          <li>HTMLスライドを作成して講義資料や提案資料にも活用</li>
+        </ul>
+      </div>
+      <div class="tool-tip">
+        <p><strong>まず知っておくなら →</strong><br>
+        「コードが書けなくても、指示を出すだけで仕組みが作れるツール」<br>
+        名前と概念だけ覚えておいて。興味が出たらYouTubeで検索してみて。</p>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span class="cur"></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 9 右腕 ════════════════════ -->
+  <div class="slide s9">
+    <div class="s9-inner">
+      <div class="s9-left">
+        <div class="s9-icon">🌸</div>
+        <div class="s9-vert">右腕でいられる理由</div>
+      </div>
+      <div class="s9-right">
+        <div class="s9-label">CLOSING MESSAGE</div>
+        <div class="s9-title">私がなぜ<br>クライアントの右腕でいられるか</div>
+        <div class="s9-divider"></div>
+        <div class="s9-body">
+          <p>ツールを使いこなしているから、ではありません。</p>
+          <p>私がやっていることの裏側には、クライアントごとに<br>
+          <span class="s9-keyword">「その人のクローン」</span>を持っている仕組みがあります。</p>
+          <p>発信の癖・ペルソナ・事業の方向性・過去のコンテンツ<br>
+          ——全部を記憶させて、そこからコンテンツを<br>生み出せる状態を作っている。</p>
+          <p>今日すぐに真似できることではないかもしれません。<br>
+          でも「こういう世界がある」と知っているだけで、<br>あなたの選択肢は確実に広がります。</p>
+        </div>
+        <div class="s9-closing">まずは基本5選から、1つでも試してみてください。</div>
+      </div>
+    </div>
+    <div class="page-strip">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span class="cur"></span><span></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SLIDE 10 まとめ ════════════════════ -->
+  <div class="slide s1" style="background: linear-gradient(160deg, #EDE0D4 0%, #D4C0B4 100%);">
+    <div class="s1-ornament"></div>
+    <div class="s1-label" style="color: rgba(62,46,40,.55);">AI TOOLS SUMMARY</div>
+    <div class="s1-title" style="color: var(--text-dark); font-size:20px; line-height:2.1;">
+      <table style="border-collapse:collapse; margin:0 auto; text-align:left;">
+        <tr>
+          <td style="padding:4px 18px 4px 0; font-size:11px; color:var(--blush-dark); letter-spacing:.2em; font-family:'Noto Sans JP',sans-serif; font-weight:300;">BASIC</td>
+          <td style="padding:4px 0; font-size:15px; color:var(--text-dark); letter-spacing:.08em;">01 ChatGPT</td>
+          <td style="padding:4px 0 4px 20px; font-size:11px; color:var(--text-light); letter-spacing:.15em;">考える・書く</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td style="padding:4px 0; font-size:15px; color:var(--text-dark); letter-spacing:.08em;">02 Claude</td>
+          <td style="padding:4px 0 4px 20px; font-size:11px; color:var(--text-light); letter-spacing:.15em;">作る・見せる</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td style="padding:4px 0; font-size:15px; color:var(--text-dark); letter-spacing:.08em;">03 NotebookLM</td>
+          <td style="padding:4px 0 4px 20px; font-size:11px; color:var(--text-light); letter-spacing:.15em;">頭を複製する</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td style="padding:4px 0; font-size:15px; color:var(--text-dark); letter-spacing:.08em;">04 Notta</td>
+          <td style="padding:4px 0 4px 20px; font-size:11px; color:var(--text-light); letter-spacing:.15em;">機密情報を守る</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td style="padding:4px 0; font-size:15px; color:var(--text-dark); letter-spacing:.08em;">05 NanoBanana</td>
+          <td style="padding:4px 0 4px 20px; font-size:11px; color:var(--text-light); letter-spacing:.15em;">画像を自分で作る</td>
+        </tr>
+        <tr>
+          <td style="padding:12px 18px 4px 0; font-size:11px; color:var(--blush-dark); letter-spacing:.2em; font-family:'Noto Sans JP',sans-serif; font-weight:300;">ADVANCED</td>
+          <td style="padding:12px 0 4px 0; font-size:15px; color:var(--text-dark); letter-spacing:.08em;">06 Google AI Studio</td>
+          <td style="padding:12px 0 4px 20px; font-size:11px; color:var(--text-light); letter-spacing:.15em;">動画を分析する</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td style="padding:4px 0; font-size:15px; color:var(--text-dark); letter-spacing:.08em;">07 Claude Code</td>
+          <td style="padding:4px 0 4px 20px; font-size:11px; color:var(--text-light); letter-spacing:.15em;">仕組みを作る</td>
+        </tr>
+      </table>
+    </div>
+    <div class="s1-line"></div>
+    <div class="s1-name">幸田にこ</div>
+    <div class="page-strip">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span class="cur"></span>
+    </div>
+  </div>
+
+</div><!-- /slideshow -->
+
+<!-- Navigation -->
+<div class="nav">
+  <button id="prev" onclick="move(-1)" disabled>← PREV</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button id="next" onclick="move(1)">NEXT →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+
+  function move(dir) {
+    slides[cur].classList.remove('active');
+    cur = Math.min(Math.max(cur + dir, 0), slides.length - 1);
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + slides.length;
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === slides.length - 1;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') move(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   move(-1);
+  });
+</script>
+</body>
+</html>
